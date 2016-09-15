@@ -1,7 +1,7 @@
 .line {
   fill: url(#line-gradient);
-  stroke: url(#line-gradient);
-  stroke-width: 2px;
+  stroke: #111;
+  stroke-width: 0.5px;
 }
 
 

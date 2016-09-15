@@ -55,7 +55,7 @@ function gradient_line(){
   var margin = {top: 20, right: 20, bottom: 30, left: 50}
     , width = 960 - margin.left - margin.right
     , height = 150 - margin.top - margin.bottom
-    , title = 'Reuseable Heatmap'
+    , title = 'Reuseable Line Graph'
     , x_col = 'date'
     , y_col = 'eta'
     , gradient_color = [
@@ -68,7 +68,7 @@ function gradient_line(){
   var x = d3.scaleTime().range([0, width]);
   var y = d3.scaleLinear().range([height, 0]);
   // define the line
-  var valueline = d3.area()
+  var value_line = d3.area()
     .x(function(d) { return x(d[x_col]); })
     .y0(y(0))
     .y1(function(d) { return y(d[y_col]); });
@@ -102,19 +102,19 @@ function gradient_line(){
     svg.append('linearGradient')
       .attr('id','line-gradient')
       .attr('gradientUnits', 'userSpaceOnUse')
-      .attr('x1',0).attr('y1', y(d3.max(csv, function(d) { return d.eta; })*0.20))
-      .attr("x2", 0).attr("y2", y(d3.max(csv, function(d) { return d.eta; })*0.5))
+      .attr('x1',0).attr('y1', y(d3.max(csv, function(d) { return d[y_col]; })*0.20))
+      .attr("x2", 0).attr("y2", y(d3.max(csv, function(d) { return d[y_col]; })*0.5))
       .selectAll("stop")
         .data(gradient_color)
       .enter().append("stop")
         .attr("offset", function(d) { return d.offset; })
         .attr("stop-color", function(d) { return d.color; });
 
-    // Add the valueline path.
+    // Add the value_line path.
     svg.append("path")
         .data([csv])
         .attr("class", "line")
-        .attr("d", valueline);
+        .attr("d", value_line);
     // Add the X Axis
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
@@ -143,12 +143,34 @@ function gradient_line(){
   chart.width = function(w) {
     if (!arguments.length) { return width; }
     width = w;
+    x = d3.scaleTime().range([0, width])
     return chart;
   };
 
   chart.height = function(h) {
     if (!arguments.length) { return height; }
     height = h;
+    y = d3.scaleLinear().range([height, 0])
+    value_line = d3.area()
+      .x(function(d) { return x(d[x_col]); })
+      .y0(y(0))
+      .y1(function(d) { return y(d[y_col]); });
+    return chart;
+  };
+
+  chart.graph_type = function(t) {
+    if (!arguments.length) { return value_line; }
+    if (t=='line'){
+      value_line = d3.line()
+      .x(function(d) { return x(d[x_col]); })
+      .y(function(d) { return y(d[y_col]); });
+      d3.select('.line').style('fill','none')
+    }else if (t=='area'){
+      valueline = d3.area()
+        .x(function(d) { return x(d[x_col]); })
+        .y0(y(0))
+        .y1(function(d) { return y(d[y_col]); });
+    }
     return chart;
   };
 
