@@ -1,25 +1,36 @@
 
 (function() {
   // call the heatmap constructor
-  var gl_obj = gradient_line();
-  // the number of elements in this array determines the number of heatmaps created
-  var dataPathArray = ['scotus_analyzed.csv'
-                      ];
+  // set parameters for each graph
+  var graph_config = [
+    {graphName:'eta'
+      , x_col:'date'
+      , y_col: 'eta'
+    }
+    ,{graphName:'volume'
+      , x_col:'date'
+      , y_col:'count'}
+  ]
   // create a graph for each dataset
-  dataPathArray.forEach(function(dataFileName){
-    console.log(dataFileName)
+  graph_config.forEach(function(graph){
+    console.log(graph.graphName)
+    var data_path = './data/scotus_analyzed.csv';
 
-    var data = d3.csv('./data/'+dataFileName,function(error, data){
+    var data = d3.csv(data_path,function(error, data){
       if (error) return console.warn(error);
 
-      gl_obj.title( 'Example:: '+dataFileName )
-      var container = d3.select("body").selectAll('#'+dataFileName);
+      var chart_obj = gradient_line();
+      chart_obj.title( 'Example:: '+graph.graphName )
+      chart_obj.x_col = graph.x_col
+      chart_obj.y_col = graph.y_col
+
+      var container = d3.select("body").selectAll('#'+graph.graphName);
 
       container.data([data])
           .enter()
           .append("div")
-          .attr('id',dataFileName)
-          .call(gl_obj);
+          .attr('id',graph.graphName)
+          .call(chart_obj);
 
     })
 

@@ -57,7 +57,13 @@ function gradient_line(){
     , height = 150 - margin.top - margin.bottom
     , title = 'Reuseable Heatmap'
     , x_col = 'date'
-    , y_col = 'eta';
+    , y_col = 'eta'
+    , gradient_color = [
+          {offset: "0%", color: "steelblue"},
+          {offset: "50%", color: "gray"},
+          {offset: "100%", color: "red"}
+        ]
+  ;
 
   var x = d3.scaleTime().range([0, width]);
   var y = d3.scaleLinear().range([height, 0]);
@@ -99,11 +105,7 @@ function gradient_line(){
       .attr('x1',0).attr('y1', y(d3.max(csv, function(d) { return d.eta; })*0.20))
       .attr("x2", 0).attr("y2", y(d3.max(csv, function(d) { return d.eta; })*0.5))
       .selectAll("stop")
-        .data([
-          {offset: "0%", color: "steelblue"},
-          {offset: "50%", color: "gray"},
-          {offset: "100%", color: "red"}
-        ])
+        .data(gradient_color)
       .enter().append("stop")
         .attr("offset", function(d) { return d.offset; })
         .attr("stop-color", function(d) { return d.color; });
@@ -150,9 +152,21 @@ function gradient_line(){
     return chart;
   };
 
-  chart.gridSize = function(m) {
-    if (!arguments.length) { return gridSize; }
-    gridSize = m;
+  chart.x_col = function(x) {
+    if (!arguments.length) { return x_col; }
+    x_col = x;
+    return chart;
+  };
+
+  chart.y_col = function(y) {
+    if (!arguments.length) { return y_col; }
+    y_col = y;
+    return chart;
+  };
+
+  chart.gradient_color = function(c) {
+    if (!arguments.length) { return gradient_color; }
+    gradient_color = c;
     return chart;
   };
 
