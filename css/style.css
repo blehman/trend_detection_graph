@@ -1,5 +1,4 @@
 .line {
-  fill: url(#line-gradient);
   stroke: #111;
   stroke-width: 0.5px;
 }

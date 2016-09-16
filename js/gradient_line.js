@@ -49,7 +49,7 @@
 
 
 // add elements in which to place the chart
-function gradient_line(){
+function LineGraph(){
 
   // set the dimensions and margins of the graph
   var margin = {top: 20, right: 20, bottom: 30, left: 50}
@@ -58,6 +58,10 @@ function gradient_line(){
     , title = 'Reuseable Line Graph'
     , x_col = 'date'
     , y_col = 'eta'
+    , g_col = 'eta'
+    , add_vgradient = false
+    , line_fill = 'url(#line-gradient)'
+    , theta = 4
     , gradient_color = [
           {offset: "0%", color: "steelblue"},
           {offset: "50%", color: "gray"},
@@ -78,16 +82,21 @@ function gradient_line(){
     // note: selection is passed in from the .call(myHeatmap), which is the same as myHeatmap(d3.select('.stuff')) -- ??
     var parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
     selection.each(function(csv){
-        console.log(csv)
-        console.log(height)
+        //console.log(csv)
+        //console.log(height)
 
         // format data
         csv.forEach(function(d) {
         d[x_col] = parseTime(d[x_col]);
         d[y_col] = +d[y_col];
+        d['eta'] = +d['eta'];
+        d['theta_breach']=0;
+        if (d.eta >= theta){
+          d['theta_breach']=1
+        };
         })
 
-    var svg = d3.select("body").append("svg")
+    var svg = selection.append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
       .append("g")
@@ -98,23 +107,27 @@ function gradient_line(){
     x.domain(d3.extent(csv, function(d) { return d[x_col]; }));
     y.domain([0, d3.max(csv, function(d) { return d[y_col]; })]);
 
-    // Add a gradient to line
-    svg.append('linearGradient')
-      .attr('id','line-gradient')
-      .attr('gradientUnits', 'userSpaceOnUse')
-      .attr('x1',0).attr('y1', y(d3.max(csv, function(d) { return d[y_col]; })*0.20))
-      .attr("x2", 0).attr("y2", y(d3.max(csv, function(d) { return d[y_col]; })*0.5))
-      .selectAll("stop")
-        .data(gradient_color)
-      .enter().append("stop")
-        .attr("offset", function(d) { return d.offset; })
-        .attr("stop-color", function(d) { return d.color; });
-
+    if (add_vgradient){
+      // Add a vertical gradient to line
+      svg.append('linearGradient')
+          .attr('id','line-gradient')
+          .attr('gradientUnits', 'userSpaceOnUse')
+          .attr('x1',0).attr('y1', y(theta*0.5))
+          .attr("x2", 0).attr("y2", y(theta))
+          .selectAll("stop")
+            .data(gradient_color)
+          .enter().append("stop")
+            .attr("offset", function(d) { return d.offset; })
+            .attr("stop-color", function(d) { return d.color; });
+    }else{
+      console.log(csv)
+    }
     // Add the value_line path.
     svg.append("path")
         .data([csv])
         .attr("class", "line")
-        .attr("d", value_line);
+        .attr("d", value_line)
+        .style('fill',line_fill);
     // Add the X Axis
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
@@ -122,7 +135,6 @@ function gradient_line(){
     // Add the Y Axis
     svg.append("g")
         .call(d3.axisLeft(y));
-
       // Add title
       svg.append('g')
           .classed('title_container',true)
@@ -158,19 +170,24 @@ function gradient_line(){
     return chart;
   };
 
-  chart.graph_type = function(t) {
+  chart.graph_type = function(t,n) {
     if (!arguments.length) { return value_line; }
     if (t=='line'){
       value_line = d3.line()
       .x(function(d) { return x(d[x_col]); })
       .y(function(d) { return y(d[y_col]); });
-      d3.select('.line').style('fill','none')
     }else if (t=='area'){
       valueline = d3.area()
         .x(function(d) { return x(d[x_col]); })
         .y0(y(0))
         .y1(function(d) { return y(d[y_col]); });
     }
+    return chart;
+  };
+
+  chart.line_fill = function(f,n) {
+    if (!arguments.length) { return line_fill; }
+      line_fill = f;
     return chart;
   };
 
@@ -209,6 +226,12 @@ function gradient_line(){
   chart.title = function(t) {
     if (!arguments.length) { return title; }
     title = t;
+    return chart;
+  };
+
+  chart.add_vgradient = function(v){
+    if (!arguments.length) { return add_vgradient; }
+    add_vgradient=v
     return chart;
   };
 
