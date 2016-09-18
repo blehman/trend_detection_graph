@@ -60,7 +60,9 @@ function LineGraph(){
     , y_col = 'eta'
     , g_col = 'eta'
     , add_vgradient = false
-    , line_fill = 'url(#line-gradient)'
+    , add_hgradient = false
+    , line_fill = 'none'
+    , line_stroke = '#111'
     , theta = 4
     , gradient_color = [
           {offset: "0%", color: "steelblue"},
@@ -79,11 +81,9 @@ function LineGraph(){
 
   function chart(selection){
     // the chart function builds the heatmap.
-    // note: selection is passed in from the .call(myHeatmap), which is the same as myHeatmap(d3.select('.stuff')) -- ??
+    // note: selection is passed in from the .call(chart_obj), which is the same as chart_obj(d3.select('.stuff'))
     var parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
     selection.each(function(csv){
-        //console.log(csv)
-        //console.log(height)
 
         // format data
         csv.forEach(function(d) {
@@ -104,13 +104,15 @@ function LineGraph(){
               "translate(" + margin.left + "," + margin.top + ")");
 
     // Scale the range of the csv
-    x.domain(d3.extent(csv, function(d) { return d[x_col]; }));
-    y.domain([0, d3.max(csv, function(d) { return d[y_col]; })]);
+    var date_range = d3.extent(csv, function(d) { return d[x_col]; });
+    x.domain(date_range);
+    var y_range = [0, d3.max(csv, function(d) { return d[y_col]; })];
+    y.domain(y_range);
 
     if (add_vgradient){
       // Add a vertical gradient to line
-      svg.append('linearGradient')
-          .attr('id','line-gradient')
+        svg.append('linearGradient')
+          .attr('id','line-vgradient')
           .attr('gradientUnits', 'userSpaceOnUse')
           .attr('x1',0).attr('y1', y(theta*0.5))
           .attr("x2", 0).attr("y2", y(theta))
@@ -119,15 +121,33 @@ function LineGraph(){
           .enter().append("stop")
             .attr("offset", function(d) { return d.offset; })
             .attr("stop-color", function(d) { return d.color; });
+    }else if(add_hgradient){
+      var date_start = date_range[0];
+      var date_end = date_range[1];
+      var date_mid = new Date((date_start.getTime()+date_end.getTime())/2);
+      //var date_mid = date_mid.getFullYear()+'-'+(date_mid.getMonth()+1)
+      var date_array = [date_mid, date_start, date_end];
+      console.log(date_array)
+        svg.append('linearGradient')
+          .attr('id','line-hgradient')
+          .attr('gradientUnits', 'userSpaceOnUse')
+          .attr('x1',x(date_mid)).attr('y1',0)
+          .attr("x2",x(date_end)).attr("y2", 0)
+          .selectAll("stop")
+            .data(gradient_color)
+          .enter().append("stop")
+            .attr("offset", function(d) { return d.offset; })
+            .attr("stop-color", function(d) { return d.color; });
     }else{
-      console.log(csv)
+      //console.log(csv)
     }
     // Add the value_line path.
     svg.append("path")
         .data([csv])
         .attr("class", "line")
         .attr("d", value_line)
-        .style('fill',line_fill);
+        .style('fill',line_fill)
+        .style('stroke',line_stroke);
     // Add the X Axis
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
@@ -191,6 +211,12 @@ function LineGraph(){
     return chart;
   };
 
+  chart.line_stroke = function(f,n) {
+    if (!arguments.length) { return line_stroke; }
+      line_stroke = f;
+    return chart;
+  };
+
   chart.x_col = function(x) {
     if (!arguments.length) { return x_col; }
     x_col = x;
@@ -235,5 +261,10 @@ function LineGraph(){
     return chart;
   };
 
+  chart.add_hgradient = function(h){
+    if (!arguments.length) { return add_hgradient; }
+    add_hgradient=h
+    return chart;
+  };
   return chart
 }

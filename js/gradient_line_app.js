@@ -9,8 +9,10 @@
       , y_col:'count'
       , height: 400
       , graph_type:'line'
-      , line_fill: 'none'
+      , line_stroke: 'url(#line-hgradient)'
+      , line_fill:'none'
       , add_vgradient:false
+      , add_hgradient:true
     }
     ,{
       graph_name:'eta'
@@ -18,8 +20,10 @@
       , y_col: 'eta'
       , height: 140
       , graph_type:'area'
-      , line_fill:'url(#line-gradient)'
+      , line_stroke: '#111'
+      , line_fill:'url(#line-vgradient)'
       , add_vgradient:true
+      , add_hgradient: false
     }
   ]
   // create a graph for each dataset
@@ -38,7 +42,9 @@
       chart_obj.height(graph.height)
       chart_obj.graph_type(graph.graph_type,graph.graph_name)
       chart_obj.add_vgradient(graph.add_vgradient)
+      chart_obj.add_hgradient(graph.add_hgradient)
       chart_obj.line_fill(graph.line_fill)
+      chart_obj.line_stroke(graph.line_stroke)
 
       var container = d3.select("body").selectAll('#'+graph.graph_name);
 
