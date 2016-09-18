@@ -63,7 +63,7 @@ function LineGraph(){
     , add_hgradient = false
     , line_fill = 'none'
     , line_stroke = '#111'
-    , theta = 4
+    , theta = 16
     , gradient_color = [
           {offset: "0%", color: "steelblue"},
           {offset: "50%", color: "gray"},
@@ -83,18 +83,28 @@ function LineGraph(){
     // the chart function builds the heatmap.
     // note: selection is passed in from the .call(chart_obj), which is the same as chart_obj(d3.select('.stuff'))
     var parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
+    var stop_dates = [];
     selection.each(function(csv){
-
+        var sp=0;
         // format data
         csv.forEach(function(d) {
-        d[x_col] = parseTime(d[x_col]);
-        d[y_col] = +d[y_col];
-        d['eta'] = +d['eta'];
-        d['theta_breach']=0;
-        if (d.eta >= theta){
-          d['theta_breach']=1
-        };
-        })
+          d[x_col] = parseTime(d[x_col]);
+          d[y_col] = +d[y_col];
+          d['eta'] = +d['eta'];
+          d['theta_breach']=0;
+          if (d.eta >= theta){
+            if (sp==0){
+              stop_dates.push(d[x_col])
+            }
+            sp = 1
+            d['theta_breach']=1
+          }else{
+            if (sp==1){
+              stop_dates.push(d[x_col])
+            }
+            sp = 0
+          };
+          })
 
     var svg = selection.append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -122,19 +132,29 @@ function LineGraph(){
             .attr("offset", function(d) { return d.offset; })
             .attr("stop-color", function(d) { return d.color; });
     }else if(add_hgradient){
+      console.log(stop_dates)
       var date_start = date_range[0];
       var date_end = date_range[1];
       var date_mid = new Date((date_start.getTime()+date_end.getTime())/2);
+      var date_75 = new Date(date_end.getTime()-((date_end.getTime()-date_start.getTime())/4) );
+      var date_25 = new Date(date_start.getTime()+((date_end.getTime()-date_start.getTime())/4) );
       //var date_mid = date_mid.getFullYear()+'-'+(date_mid.getMonth()+1)
-      var date_array = [date_mid, date_start, date_end];
-      console.log(date_array)
+      var date_array = [date_mid,date_25,date_75, date_start, date_end];
+      //console.log(date_array)
+      var gradient_stuff = [
+          {offset: "0%", color: "steelblue"}
+          , {offset: "25%", color: "red"}
+          , {offset: "75%", color: "steelblue"}
+          , {offset: "100%", color: "red"}
+        ];
         svg.append('linearGradient')
           .attr('id','line-hgradient')
           .attr('gradientUnits', 'userSpaceOnUse')
-          .attr('x1',x(date_mid)).attr('y1',0)
-          .attr("x2",x(date_end)).attr("y2", 0)
+          .attr('x1',x(date_25)).attr('y1',0)
+          .attr("x2",x(date_75)).attr("y2", 0)
+          .attr("x3",x(date_end)).attr("y3", 0)
           .selectAll("stop")
-            .data(gradient_color)
+            .data(gradient_stuff)
           .enter().append("stop")
             .attr("offset", function(d) { return d.offset; })
             .attr("stop-color", function(d) { return d.color; });
