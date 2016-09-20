@@ -63,7 +63,7 @@ function LineGraph(){
     , add_hgradient = false
     , line_fill = 'none'
     , line_stroke = '#111'
-    , theta = 16
+    , theta = 4
     , gradient_color = [
           {offset: "0%", color: "steelblue"},
           {offset: "50%", color: "gray"},
@@ -132,14 +132,16 @@ function LineGraph(){
             .attr("offset", function(d) { return d.offset; })
             .attr("stop-color", function(d) { return d.color; });
     }else if(add_hgradient){
+      /*
       var hgradient = svg.append('linearGradient')
           .attr('id','line-hgradient')
           .attr('gradientUnits', 'userSpaceOnUse');
-        stop_dates.forEach(function(d,i){
+      stop_dates.forEach(function(d,i){
           var n = i+1;
-          hgradient.attr('x'+n,d)
-      })
-      console.log(stop_dates)
+          hgradient.attr('x'+n,x(d))
+          })
+      */
+      //console.log(stop_dates)
       var date_start = date_range[0];
       var date_end = date_range[1];
       var date_mid = new Date((date_start.getTime()+date_end.getTime())/2);
@@ -148,18 +150,46 @@ function LineGraph(){
       //var date_mid = date_mid.getFullYear()+'-'+(date_mid.getMonth()+1)
       var date_array = [date_mid,date_25,date_75, date_start, date_end];
       //console.log(date_array)
+      /*
       var gradient_stuff = [
           {offset: "0%", color: "steelblue"}
-          , {offset: "25%", color: "red"}
+          , {offset: "70%", color: "steelblue"}
+          , {offset: "70%", color: "red"}
+          , {offset: "75%", color: "red"}
           , {offset: "75%", color: "steelblue"}
-          , {offset: "100%", color: "red"}
-        ];
+          , {offset: "100%", color: "steelblue"}
+          ];
+          */
+      // i = 0 turns off Steelblue (turns on red) and i = 1 turns on Steelblue (turns off red)
+      var gradient_stuff = []
+        , x_axis_len = x(date_end) - x(date_start);
+      stop_dates.forEach(function(d,i){
+        p = (x(d)/x_axis_len)*100
+        if (i%2==0){
+            on = 'red'
+            off = 'steelblue'
+            if (i==0){
+              prev_p = 0
+            }
+          }else if (i%2==1){
+              on = 'steelblue'
+              off = 'red'
+        }
+        console.log([off,on,prev_p,p])
+        gradient_stuff.push({offset: prev_p+"%", color: off})
+        gradient_stuff.push({offset: p+"%", color: off})
+        gradient_stuff.push({offset: p+"%", color: on})
+        if (i==(stop_dates.length-1)){
+            gradient_stuff.push({offset: "100%", color: on})
+        }
+        prev_p = p
+      })
+      console.log(gradient_stuff)
         svg.append('linearGradient')
           .attr('id','line-hgradient')
           .attr('gradientUnits', 'userSpaceOnUse')
-          .attr('x1',x(date_25)).attr('y1',0)
-          .attr("x2",x(date_75)).attr("y2", 0)
-          .attr("x3",x(date_end)).attr("y3", 0)
+          .attr('x1',x(date_start)).attr('y1',0)
+          .attr("x2",x(date_end)).attr("y2", 0)
           .selectAll("stop")
             .data(gradient_stuff)
           .enter().append("stop")
