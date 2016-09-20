@@ -132,6 +132,13 @@ function LineGraph(){
             .attr("offset", function(d) { return d.offset; })
             .attr("stop-color", function(d) { return d.color; });
     }else if(add_hgradient){
+      var hgradient = svg.append('linearGradient')
+          .attr('id','line-hgradient')
+          .attr('gradientUnits', 'userSpaceOnUse');
+        stop_dates.forEach(function(d,i){
+          var n = i+1;
+          hgradient.attr('x'+n,d)
+      })
       console.log(stop_dates)
       var date_start = date_range[0];
       var date_end = date_range[1];
