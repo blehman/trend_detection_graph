@@ -26,7 +26,7 @@
       , add_hgradient: false
     }
   ]
-  // create a graph for each dataset
+  // create a line graph for each dataset
   graph_config.forEach(function(graph){
     console.log(graph.graph_name)
 
@@ -55,4 +55,10 @@
           .call(chart_obj);
     })
   })
+  // create slider
+  var slider_obj = Slider();
+
+  d3.select("body").append("div")
+      .attr('id','slider')
+      .call(slider_obj);
 }())
