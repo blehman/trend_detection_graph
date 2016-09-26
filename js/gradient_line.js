@@ -144,22 +144,7 @@ function LineGraph(){
       //console.log(stop_dates)
       var date_start = date_range[0];
       var date_end = date_range[1];
-      var date_mid = new Date((date_start.getTime()+date_end.getTime())/2);
-      var date_75 = new Date(date_end.getTime()-((date_end.getTime()-date_start.getTime())/4) );
-      var date_25 = new Date(date_start.getTime()+((date_end.getTime()-date_start.getTime())/4) );
-      //var date_mid = date_mid.getFullYear()+'-'+(date_mid.getMonth()+1)
-      var date_array = [date_mid,date_25,date_75, date_start, date_end];
-      //console.log(date_array)
-      /*
-      var gradient_stuff = [
-          {offset: "0%", color: "steelblue"}
-          , {offset: "70%", color: "steelblue"}
-          , {offset: "70%", color: "red"}
-          , {offset: "75%", color: "red"}
-          , {offset: "75%", color: "steelblue"}
-          , {offset: "100%", color: "steelblue"}
-          ];
-          */
+      //var date_75 = new Date(date_end.getTime()-((date_end.getTime()-date_start.getTime())/4) );
       // i = 0 turns off Steelblue (turns on red) and i = 1 turns on Steelblue (turns off red)
       var gradient_stuff = []
         , x_axis_len = x(date_end) - x(date_start);
