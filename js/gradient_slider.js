@@ -5,9 +5,13 @@ function Slider(){
   var margin = {top: 20, right: 80, bottom: 30, left: 20}
     , width = 960 - margin.left - margin.right
     , height = 70 - margin.top - margin.bottom
+    , callback;
+
+  var x = d3.scaleTime().range([0, 890]);
+  var y = d3.scaleLinear().range([100, 0]);
   // set slider variables
-  var hueActual = 0,
-      hueTarget = 4,
+  var thetaActual = 0,
+      thetaTarget = 4,
       hueAlpha = 1;
 
    function chart(selection){
@@ -19,7 +23,6 @@ function Slider(){
         .attr("transform",
               "translate(" + margin.left + "," + margin.top + ")");
     // set slider variables
-    var hueTimer = d3.timer(hueTween);
 
     // create scale
     var x = d3.scaleLinear()
@@ -42,8 +45,8 @@ function Slider(){
       .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
         .attr("class", "track-overlay")
         .call(d3.drag()
-            .on("start.interrupt", function() { slider.interrupt(); })
-            .on("start drag", function() { hue(x.invert(d3.event.x)); }));
+            //.on("start.interrupt", function() { slider.interrupt(); })
+            .on("start drag", function() { on_change(x.invert(d3.event.x)); }));
 
     // create ticks & labels
     slider.insert("g", ".track-overlay")
@@ -62,18 +65,10 @@ function Slider(){
         .attr("r", 9);
 
     // unclear what this does
-    function hue(h) {
-      hueTarget = h;
-      hueTimer.restart(hueTween);
-    }
-
-    // unclear what this does too
-    function hueTween() {
-      var hueError = hueTarget - hueActual;
-      if (Math.abs(hueError) < 1e-3) hueActual = hueTarget, hueTimer.stop();
-      else hueActual += hueError * hueAlpha;
-      handle.attr("cx", x(hueActual));
-      d3.select('#slider svg').style("background-color", d3.hsl(hueActual, 0.8, 0.8));
+    function on_change(h) {
+      thetaTarget = h;
+      d3.select(".handle").attr("cx", d3.event.x);
+      callback(h);
     }
   }
 
@@ -83,21 +78,33 @@ function Slider(){
     return chart;
   };
 
-  chart.hueActual = function(A) {
-    if (!arguments.length) { return hueActual; }
-    hueActual = A;
+  chart.thetaActual = function(A) {
+    if (!arguments.length) { return thetaActual; }
+    thetaActual = A;
     return chart;
   };
 
-  chart.hueTarget = function(T) {
-    if (!arguments.length) { return hueTarget; }
-    hueTarget = T;
+  chart.thetaTarget = function(T) {
+    if (!arguments.length) { return thetaTarget; }
+    thetaTarget = T;
     return chart;
   };
 
   chart.hueAlpha = function(A) {
     if (!arguments.length) { return hueAlpha; }
     hueAlpha = A;
+    return chart;
+  };
+
+  chart.targetChart = function(A) {
+    if (!arguments.length) { return targetChart; }
+    targetChart = A;
+    return chart;
+  };
+
+  chart.callback = function(A) {
+    if (!arguments.length) { return callback; }
+    callback = A;
     return chart;
   };
 
