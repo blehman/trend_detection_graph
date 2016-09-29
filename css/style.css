@@ -42,3 +42,9 @@
   stroke-opacity: 0.5;
   stroke-width: 1.25px;
 }
+
+/* gray theta line*/
+#theta_hline{
+  stroke: gray;
+  stoke-with: 1px;
+}

@@ -10,10 +10,7 @@ function Slider(){
   var x = d3.scaleTime().range([0, 890]);
   var y = d3.scaleLinear().range([100, 0]);
   // set slider variables
-  var thetaActual = 0,
-      thetaTarget = 4,
-      hueAlpha = 1;
-
+  
    function chart(selection){
     // build svg
     var svg = selection.append("svg")
@@ -26,10 +23,10 @@ function Slider(){
 
     // create scale
     var x = d3.scaleLinear()
-      .domain([0, 20])
+      .domain([0, 18])
       .range([0, width])
       .clamp(true);
-
+    var theta = 4;
     // build slider 
     var slider = svg.append("g")
       .attr("class", "slider")
@@ -62,7 +59,8 @@ function Slider(){
     // create ball slider
     var handle = slider.insert("circle", ".track-overlay")
         .attr("class", "handle")
-        .attr("r", 9);
+        .attr("r", 9)
+        .attr("cx",x(theta));
 
     // unclear what this does
     function on_change(h) {
@@ -75,24 +73,6 @@ function Slider(){
   chart.margin = function(m) {
     if (!arguments.length) { return margin; }
     margin = m;
-    return chart;
-  };
-
-  chart.thetaActual = function(A) {
-    if (!arguments.length) { return thetaActual; }
-    thetaActual = A;
-    return chart;
-  };
-
-  chart.thetaTarget = function(T) {
-    if (!arguments.length) { return thetaTarget; }
-    thetaTarget = T;
-    return chart;
-  };
-
-  chart.hueAlpha = function(A) {
-    if (!arguments.length) { return hueAlpha; }
-    hueAlpha = A;
     return chart;
   };
 

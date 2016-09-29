@@ -16,7 +16,8 @@ function LineGraph(){
     , theta = 4
     , gradient_color = [
           {offset: "0%", color: "steelblue"},
-          {offset: "50%", color: "gray"},
+          {offset: "50%", color: "steelblue"},
+          {offset: "50%", color: "red"},
           {offset: "100%", color: "red"}
         ]
   ;
@@ -54,7 +55,6 @@ function LineGraph(){
             sp = 0
           };
           })
-        console.log(csv)
 
 
     // Chart Setup
@@ -108,58 +108,86 @@ function LineGraph(){
     }
 
     if (add_vgradient){
-      // Add a vertical gradient to line
+      // set eta gradient based on theta
+      var p_eta = (theta/y_range[1])*100
+      console.log(p_eta+'%')
+      gradient_color = [
+            {offset: "0%", color: "steelblue"},
+            {offset: p_eta+'%', color: "steelblue"},
+            {offset: p_eta+'%', color: "red"},
+            {offset: "100%", color: "red"}
+      ]
+
+      // eta: Add a vertical gradient to line
       svg.select('linearGradient').remove()
       svg.append('linearGradient')
-          .attr('id','line-vgradient')
-          .attr('gradientUnits', 'userSpaceOnUse')
-          .attr('x1',0).attr('y1', y(theta*0.5))
-          .attr("x2", 0).attr("y2", y(theta))
-          .selectAll("stop")
-            .data(gradient_color)
-          .enter().append("stop")
-            .attr("offset", function(d) { return d.offset; })
-            .attr("stop-color", function(d) { return d.color; });
+        .attr('id','line-vgradient')
+        .attr('gradientUnits', 'userSpaceOnUse')
+        .attr('x1',0).attr('y1', y(0))
+        .attr("x2", 0).attr("y2", y(y_range[1]))
+        .selectAll("stop")
+        .data(gradient_color)
+        .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
+
+      // create horizontal line
+      svg.select('#theta_hline').remove()
+      svg.append("line")
+        .attr('id','theta_hline',true)
+        .attr("x1", x(date_start))
+        .attr("y1", y(theta))
+        .attr("x2", x(date_end))
+        .attr("y2", y(theta))
+        .style('stroke-dasharray', "3,3");
+
+      ;
+
     }else if(add_hgradient){
       //var date_75 = new Date(date_end.getTime()-((date_end.getTime()-date_start.getTime())/4) );
-      // i = 0 turns off Steelblue (turns on red) and i = 1 turns on Steelblue (turns off red)
-      var gradient_stuff = []
+      // volvume: i = 0 turns off Steelblue (turns on red) and i = 1 turns on Steelblue (turns off red)
+      var gradient_details = []
         , x_axis_len = x(date_end) - x(date_start);
       stop_dates.forEach(function(d,i){
+        // set the percentage of the gradient based on the position of the date
         p = (x(d)/x_axis_len)*100
+        // logic defines color
         if (i%2==0){
-            on = 'red'
-            off = 'steelblue'
-            if (i==0){
-              prev_p = 0
-            }
-          }else if (i%2==1){
-              on = 'steelblue'
-              off = 'red'
+          on = 'red'
+          off = 'steelblue'
+          if (i==0){
+            prev_p = 0
+          }
+        }else if (i%2==1){
+          on = 'steelblue'
+          off = 'red'
         }
-        //console.log([off,on,prev_p,p])
-        gradient_stuff.push({offset: prev_p+"%", color: off})
-        gradient_stuff.push({offset: p+"%", color: off})
-        gradient_stuff.push({offset: p+"%", color: on})
+        // creates hard start/stop in color change.
+        gradient_details.push({offset: prev_p+"%", color: off})
+        gradient_details.push({offset: p+"%", color: off})
+        gradient_details.push({offset: p+"%", color: on})
+        // close out gradient
         if (i==(stop_dates.length-1)){
-            gradient_stuff.push({offset: "100%", color: on})
+          gradient_details.push({offset: "100%", color: on})
         }
         prev_p = p
       })
+      // remove former gradient
+      svg.select('linearGradient').remove()
       // create gradient
-        svg.select('linearGradient').remove()
-        svg.append('linearGradient')
-          .attr('id','line-hgradient')
-          .attr('gradientUnits', 'userSpaceOnUse')
-          .attr('x1',x(date_start)).attr('y1',0)
-          .attr("x2",x(date_end)).attr("y2", 0)
-          .selectAll("stop")
-            .data(gradient_stuff)
-          .enter().append("stop")
-            .attr("offset", function(d) { return d.offset; })
-            .attr("stop-color", function(d) { return d.color; });
-    }
+      svg.append('linearGradient')
+        .attr('id','line-hgradient')
+        .attr('gradientUnits', 'userSpaceOnUse')
+        .attr('x1',x(date_start)).attr('y1',0)
+        .attr("x2",x(date_end)).attr("y2", 0)
+        .selectAll("stop")
+        .data(gradient_details)
+        .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
 
+
+    }
     })
   }
 
