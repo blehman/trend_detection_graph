@@ -15,10 +15,10 @@ function HSlider(){
   var margin = {top: 20, right: 20, bottom: 30, left: 50}
     , width = 960 - margin.left - margin.right
     , height = 150 - margin.top - margin.bottom
-    , h_line = d3.select('#theta_hline-overlay')
     , x_col = 'date'
     , y_col = 'eta'
-    , callbackr
+    , theta = 4
+    , callback
     ;
   function chart(selection){
       var x = d3.scaleTime().range([0, width]);
@@ -37,89 +37,38 @@ function HSlider(){
         var date_start = date_range[0];
         var date_end = date_range[1];
 
-        // h_line
-        h_line.on('click',function(){console.log('CLICK')})
-        h_line.call(d3.drag()
-                //.on("start.interrupt", function() { slider.interrupt(); })
-          .on("start drag", function() { on_changer(y.invert(d3.event.y)); }))
+        // create horizontal line
+        var svg = d3.select('#eta svg g')
+        svg.select('#theta_hline').remove()
+        svg.select('#theta_hline-overlay').remove()
+        var slide = svg.append("line")
+            .attr('id','theta_hline',true)
+            .classed('slide','true')
+            .attr("x1", x(date_start))
+            .attr("y1", y(theta))
+            .attr("x2", x(date_end))
+            .attr("y2", y(theta))
+          .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+            .attr('id','theta_hline-overlay')
+            .classed('slide',true)
         ;
-    /*
-    // build svg
-    var svg = selection.append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-        .attr("transform",
-              "translate(" + margin.left + "," + margin.top + ")");
 
-    // create scale
-    var x = d3.scaleLinear()
-      .domain([0, 18])
-      .range([0, width])
-      .clamp(true);
-    var theta = 4;
-    // build slider 
-    var slider = svg.append("g")
-      .attr("class", "slider")
-      .attr("transform", "translate(" + margin.left + "," + height / 2 + ")");
-
-    // create track
-    slider.append("line")
-        .attr("class", "track")
-        .attr("x1", x.range()[0])
-        .attr("x2", x.range()[1])
-        .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-        .attr("class", "track-inset")
-      .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-        .attr("class", "track-overlay")
-        .call(d3.drag()
-            //.on("start.interrupt", function() { slider.interrupt(); })
-            .on("start drag", function() { on_change(x.invert(d3.event.x)); }));
-
-    // create ticks & labels
-    slider.insert("g", ".track-overlay")
-        .attr("class", "ticks")
-        .attr("transform", "translate(0," + 18 + ")")
-      .selectAll("text")
-      .data(x.ticks(10))
-      .enter().append("text")
-        .attr("x", x)
-        .attr("text-anchor", "middle")
-        .text(function(d) { return d; });
-
-    // create ball slider
-    var handle = slider.insert("circle", ".track-overlay")
-        .attr("class", "handle")
-        .attr("r", 9)
-        .attr("cx",x(theta));
-
-    // unclear what this does
-    function on_change(h) {
-      thetaTarget = h;
-      d3.select(".handle").attr("cx", d3.event.x);
-      callback(h);
-    }
-    */
-       // pass in theta and use callback to update gradient of other graphs
+        // create drag behavior on horizontal line
+        slide.call(d3.drag()
+          .on("start drag", function() {
+            console.log("DRAG")
+            on_change(y.invert(d3.event.y));
+          }));
     });
-        function on_changer(h) {
+        function on_change(h) {
           thetaTarget = h;
           //d3.select(".handle").attr("cx", d3.event.x);
-          callbackr(h);
+          callback(h);
         }
-
-    }
-
-/*
+  }
   chart.margin = function(m) {
     if (!arguments.length) { return margin; }
     margin = m;
-    return chart;
-  };
-
-  chart.targetChart = function(A) {
-    if (!arguments.length) { return targetChart; }
-    targetChart = A;
     return chart;
   };
 
@@ -128,10 +77,22 @@ function HSlider(){
     callback = A;
     return chart;
   };
-*/
-  chart.callbackr = function(A) {
-    if (!arguments.length) { return callbackr; }
-    callbackr = A;
+
+  chart.width = function(w) {
+    if (!arguments.length) { return width; }
+    width = w;
+    x = d3.scaleTime().range([0, width])
+    return chart;
+  };
+
+  chart.theta = function(h){
+    if (!arguments.length) { return theta; }
+    theta=h
+    return chart;
+  };
+  chart.height = function(h) {
+    if (!arguments.length) { return height; }
+    height = h;
     return chart;
   };
 

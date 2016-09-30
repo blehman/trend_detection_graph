@@ -2,48 +2,64 @@
 (function() {
   // call the heatmap constructor
   // set parameters for each graph
+  // note: slider must be last item in config (if present)
   var graph_config = [
     {
       graph_name:'volume'
       , x_col:'date'
       , y_col:'count'
+      , margin: {top: 20, right: 20, bottom: 30, left: 50}
       , height: 400
       , graph_type:'line'
       , line_stroke: 'url(#line-hgradient)'
       , line_fill:'none'
       , add_vgradient:false
       , add_hgradient:true
+      , theta: 4
     }
     ,{
       graph_name:'eta'
       , x_col:'date'
       , y_col: 'eta'
+      , margin: {top: 20, right: 20, bottom: 30, left: 50}
       , height: 140
       , graph_type:'area'
       , line_stroke: '#111'
       , line_fill:'url(#line-vgradient)'
       , add_vgradient:true
       , add_hgradient: false
+      , theta: 4
     }
   ,{
-      graph_name:'slider'
+    graph_name:'slider'
+    , x_col:'date'
+    , y_col: 'eta'
+    , margin: {top: 20, right: 20, bottom: 30, left: 50}
+    , height: 140
+    , theta: 4
     }
   ]
   var graphs = [];
-  // create a line graph for each dataset
   var data_path = './data/scotus_analyzed.csv';
   var parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
+  // get data once
   d3.csv(data_path,function(error, data){
+    // set date format
     data.forEach(function(d,i){
         d['date'] = parseTime(d['date']);
     })
+    // build graph types from config
     graph_config.forEach(function(config){
+      if (error) return console.warn(error);
+
       var container, chart_obj;
       console.log(config.graph_name)
 
-      if (error) return console.warn(error);
       if (config.graph_name != 'slider'){
+        // set attributes for all graphs (non sliders)
         chart_obj = LineGraph();
+        chart_obj.theta(config.theta)
+        chart_obj.margin(config.margin)
         chart_obj.title( config.graph_name )
         chart_obj.x_col( config.x_col )
         chart_obj.y_col( config.y_col )
@@ -56,18 +72,23 @@
         container = d3.select("body").selectAll('#'+config.graph_name);
         graphs.push(chart_obj);
       }else{
-
-        container = d3.select("body").selectAll('#'+'hslider');
+        // set attributes for slider
         chart_obj = HSlider();
-        // create callback function
-        chart_obj.callbackr(function(value) {
+        chart_obj.theta(config.theta)
+        chart_obj.margin(config.margin)
+        chart_obj.height(config.height)
+        // magic: create callback function
+        chart_obj.callback(function(value) {
           graphs[1].theta(value);
           d3.selectAll("#eta").call(graphs[1]);
           graphs[0].theta(value);
           d3.selectAll("#volume").call(graphs[0]);
-        });
+          chart_obj.theta(value)
+          d3.selectAll("#slider").call(chart_obj);
+        })
 
       }
+      container = d3.select("body").selectAll('#'+config.graph_name);
       container.data([data])
           .enter()
           .append("div")
@@ -75,5 +96,4 @@
           .call(chart_obj);
     })
   })
-  // create slider
 }())

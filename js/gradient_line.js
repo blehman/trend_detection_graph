@@ -130,21 +130,6 @@ function LineGraph(){
         .attr("offset", function(d) { return d.offset; })
         .attr("stop-color", function(d) { return d.color; });
 
-      // create horizontal line
-      svg.select('#theta_hline').remove()
-      svg.select('#theta_hline-overlay').remove()
-      var slide = svg.append("line")
-          .attr('id','theta_hline',true)
-          .classed('slide','true')
-          .attr("x1", x(date_start))
-          .attr("y1", y(theta))
-          .attr("x2", x(date_end))
-          .attr("y2", y(theta))
-        .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-          .classed('slide',true)
-          .attr('id','theta_hline-overlay')
-      ;
-
     }else if(add_hgradient){
       //var date_75 = new Date(date_end.getTime()-((date_end.getTime()-date_start.getTime())/4) );
       // volvume: i = 0 turns off Steelblue (turns on red) and i = 1 turns on Steelblue (turns off red)
