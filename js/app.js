@@ -8,8 +8,8 @@
       graph_name:'volume'
       , x_col:'date'
       , y_col:'count'
-      , margin: {top: 20, right: 20, bottom: 30, left: 50}
-      , height: 400
+      , margin: {top: 20, right: 20, bottom: 40, left: 50}
+      , height: 200
       , graph_type:'line'
       , line_stroke: 'url(#line-hgradient)'
       , line_fill:'none'
@@ -21,7 +21,7 @@
       graph_name:'eta'
       , x_col:'date'
       , y_col: 'eta'
-      , margin: {top: 20, right: 20, bottom: 30, left: 50}
+      , margin: {top: 20, right: 20, bottom: 40, left: 50}
       , height: 140
       , graph_type:'area'
       , line_stroke: '#111'
@@ -34,7 +34,7 @@
     graph_name:'slider'
     , x_col:'date'
     , y_col: 'eta'
-    , margin: {top: 20, right: 20, bottom: 30, left: 50}
+    , margin: {top: 20, right: 20, bottom: 40, left: 50}
     , height: 140
     , theta: 4
     }

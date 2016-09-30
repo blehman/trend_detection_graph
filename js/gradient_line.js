@@ -92,6 +92,7 @@ function LineGraph(){
         .style('stroke',line_stroke);
       // Add the X Axis
       svg.append("g")
+        .classed('xaxis',true)
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x));
       // Add the Y Axis
@@ -105,6 +106,11 @@ function LineGraph(){
         .attr('x',0)
         .attr('y',margin.top)
         .text(title)
+      // rotate text
+      svg.selectAll(".xaxis text")  // select all the text elements for the xaxis
+          .attr("transform", function(d) {
+            return "translate(" + this.getBBox().height*-2 + "," + this.getBBox().height + ")rotate(-45)";
+          })
     }
 
     if (add_vgradient){

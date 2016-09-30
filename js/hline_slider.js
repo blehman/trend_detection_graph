@@ -56,7 +56,6 @@ function HSlider(){
         // create drag behavior on horizontal line
         slide.call(d3.drag()
           .on("start drag", function() {
-            console.log("DRAG")
             on_change(y.invert(d3.event.y));
           }));
     });
