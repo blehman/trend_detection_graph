@@ -38,11 +38,12 @@
         d['date'] = parseTime(d['date']);
     })
     graph_config.forEach(function(config){
+      var container, chart_obj;
       console.log(config.graph_name)
 
       if (error) return console.warn(error);
       if (config.graph_name != 'slider'){
-        var chart_obj = LineGraph();
+        chart_obj = LineGraph();
         chart_obj.title( config.graph_name )
         chart_obj.x_col( config.x_col )
         chart_obj.y_col( config.y_col )
@@ -52,28 +53,26 @@
         chart_obj.add_hgradient(config.add_hgradient)
         chart_obj.line_fill(config.line_fill)
         chart_obj.line_stroke(config.line_stroke)
-
-        var container = d3.select("body").selectAll('#'+config.graph_name);
-
-        container.data([data])
-            .enter()
-            .append("div")
-            .attr('id',config.graph_name)
-            .call(chart_obj);
-          graphs.push(chart_obj);
+        container = d3.select("body").selectAll('#'+config.graph_name);
+        graphs.push(chart_obj);
       }else{
-        var slider_obj = Slider();
-        slider_obj.callback(function(value) {
+
+        container = d3.select("body").selectAll('#'+'hslider');
+        chart_obj = HSlider();
+        // create callback function
+        chart_obj.callbackr(function(value) {
           graphs[1].theta(value);
           d3.selectAll("#eta").call(graphs[1]);
           graphs[0].theta(value);
           d3.selectAll("#volume").call(graphs[0]);
         });
-        d3.select("body").append("div")
-            .attr('id','slider')
-            .call(slider_obj);
 
       }
+      container.data([data])
+          .enter()
+          .append("div")
+          .attr('id',config.graph_name)
+          .call(chart_obj);
     })
   })
   // create slider

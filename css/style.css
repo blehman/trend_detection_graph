@@ -47,4 +47,11 @@
 #theta_hline{
   stroke: gray;
   stoke-with: 1px;
+  stroke-dasharray: 3,3;
+}
+
+#theta_hline-overlay {
+  pointer-events: stroke;
+  stroke-width: 30px;
+  cursor: ns-resize;
 }

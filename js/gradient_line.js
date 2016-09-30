@@ -110,7 +110,6 @@ function LineGraph(){
     if (add_vgradient){
       // set eta gradient based on theta
       var p_eta = (theta/y_range[1])*100
-      console.log(p_eta+'%')
       gradient_color = [
             {offset: "0%", color: "steelblue"},
             {offset: p_eta+'%', color: "steelblue"},
@@ -133,14 +132,17 @@ function LineGraph(){
 
       // create horizontal line
       svg.select('#theta_hline').remove()
-      svg.append("line")
-        .attr('id','theta_hline',true)
-        .attr("x1", x(date_start))
-        .attr("y1", y(theta))
-        .attr("x2", x(date_end))
-        .attr("y2", y(theta))
-        .style('stroke-dasharray', "3,3");
-
+      svg.select('#theta_hline-overlay').remove()
+      var slide = svg.append("line")
+          .attr('id','theta_hline',true)
+          .classed('slide','true')
+          .attr("x1", x(date_start))
+          .attr("y1", y(theta))
+          .attr("x2", x(date_end))
+          .attr("y2", y(theta))
+        .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+          .classed('slide',true)
+          .attr('id','theta_hline-overlay')
       ;
 
     }else if(add_hgradient){
@@ -185,8 +187,6 @@ function LineGraph(){
         .enter().append("stop")
         .attr("offset", function(d) { return d.offset; })
         .attr("stop-color", function(d) { return d.color; });
-
-
     }
     })
   }
