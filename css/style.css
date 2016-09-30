@@ -1,10 +1,14 @@
 /*graph css*/
 
-.line {
+#volume .line {
+  stroke: #111;
+  stroke-width: 2px;
+}
+
+#eta .line {
   stroke: #111;
   stroke-width: 0.5px;
 }
-
 .axis path,
 .axis line {
   fill: none;

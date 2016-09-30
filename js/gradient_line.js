@@ -56,6 +56,19 @@ function LineGraph(){
           };
           })
 
+        d3.select("#save").on("click", function(d) {
+          var peaks =[],pair=[];
+          stop_dates.forEach(function(d,i){
+            pair.push(d)
+            if (i%2==1){
+                peaks.push(pair)
+                pair=[]
+            }
+          })
+        var json_str = JSON.stringify({'peak_dates':peaks });
+        var blob = new Blob([json_str], {type: "text/plain; charset=utf-8"});
+        saveAs(blob, "dates.json");
+    })
 
     // Chart Setup
 

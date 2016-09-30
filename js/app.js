@@ -6,6 +6,7 @@
   var graph_config = [
     {
       graph_name:'volume'
+      , title:'Count of Tweets containing #SCOTUS'
       , x_col:'date'
       , y_col:'count'
       , margin: {top: 20, right: 20, bottom: 40, left: 50}
@@ -19,6 +20,7 @@
     }
     ,{
       graph_name:'eta'
+      , title:'Trend Detection Score (eta value)'
       , x_col:'date'
       , y_col: 'eta'
       , margin: {top: 20, right: 20, bottom: 40, left: 50}
@@ -60,7 +62,7 @@
         chart_obj = LineGraph();
         chart_obj.theta(config.theta)
         chart_obj.margin(config.margin)
-        chart_obj.title( config.graph_name )
+        chart_obj.title( config.title )
         chart_obj.x_col( config.x_col )
         chart_obj.y_col( config.y_col )
         chart_obj.height(config.height)
