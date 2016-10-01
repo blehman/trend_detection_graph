@@ -1,4 +1,4 @@
-# Trend Detection Graph: tye chart
+# Tye Chart
 D3 based chart built to update [@Kolb](https://twitter.com/kolb)'s graphical representation for his [trends white paper](https://github.com/jeffakolb/Gnip-Trend-Detection). The goal is to provide a clearer story around the false positives and/or true negatives for a selected theta value.  
 
 Tye Definition
