@@ -17,8 +17,9 @@ function HSlider(){
     , height = 150 - margin.top - margin.bottom
     , x_col = 'date'
     , y_col = 'eta'
-    , theta = 4
+    , theta = 10
     , callback
+    , graph_name_id = 'eta'
     ;
   function chart(selection){
       var x = d3.scaleTime().range([0, width]);
@@ -31,14 +32,14 @@ function HSlider(){
 
         // Scale the y range of the csv
         var y_range = [0, d3.max(csv, function(d) { return d[y_col]; })];
-        y.domain(y_range);
-
+        y.domain(y_range)
+        var max_theta = y.domain()[1]
         // Set start/end dates
         var date_start = date_range[0];
         var date_end = date_range[1];
 
         // create horizontal line
-        var svg = d3.select('#eta svg g')
+        var svg = d3.select('#'+ graph_name_id +' svg g')
         svg.select('#theta_hline').remove()
         svg.select('#theta_hline-overlay').remove()
         var slide = svg.append("line")
@@ -56,12 +57,15 @@ function HSlider(){
         // create drag behavior on horizontal line
         slide.call(d3.drag()
           .on("start drag", function() {
-            on_change(y.invert(d3.event.y));
+            on_change(y.invert(d3.event.y),max_theta);
           }));
     });
-        function on_change(h) {
-          thetaTarget = h;
-          //d3.select(".handle").attr("cx", d3.event.x);
+        function on_change(h,max_theta) {
+          if (h>max_theta){
+              h = max_theta
+          } else if(h<0){
+              h = 0
+          }
           callback(h);
         }
   }
@@ -89,9 +93,22 @@ function HSlider(){
     theta=h
     return chart;
   };
+
   chart.height = function(h) {
     if (!arguments.length) { return height; }
     height = h;
+    return chart;
+  };
+
+  chart.graph_name = function(g) {
+    if (!arguments.length) { return graph_name; }
+    graph_name = g;
+    return chart;
+  };
+
+  chart.graph_name_id = function(g) {
+    if (!arguments.length) { return graph_name_id; }
+    graph_name_id = g;
     return chart;
   };
 

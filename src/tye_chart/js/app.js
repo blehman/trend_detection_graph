@@ -3,6 +3,7 @@
   // call the heatmap constructor
   // set parameters for each graph
   // note: slider must be last item in config (if present)
+  var theta_starting = 0.4
   var graph_config = [
     {
       graph_name:'volume'
@@ -16,7 +17,7 @@
       , line_fill:'none'
       , add_vgradient:false
       , add_hgradient:true
-      , theta: 4
+      , theta: theta_starting
     }
     ,{
       graph_name:'eta'
@@ -30,7 +31,7 @@
       , line_fill:'url(#line-vgradient)'
       , add_vgradient:true
       , add_hgradient: false
-      , theta: 4
+      , theta: theta_starting
     }
   ,{
     graph_name:'slider'
@@ -38,11 +39,13 @@
     , y_col: 'eta'
     , margin: {top: 20, right: 20, bottom: 40, left: 50}
     , height: 140
-    , theta: 4
+    , theta: theta_starting
     }
   ]
   var graphs = [];
-  var data_path = './data/scotus_analyzed.csv';
+  //var data_path = './data/scotus_analyzed.csv';
+  //var data_path = './data/scotus_analyzed_mode_a.csv';
+  var data_path = './data/scotus_analyzed_WeightedDataTemplates.csv';
   var parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
   // get data once
   d3.csv(data_path,function(error, data){
@@ -96,6 +99,7 @@
           .append("div")
           .attr('id',config.graph_name)
           .call(chart_obj);
+
     })
   })
 }())

@@ -13,13 +13,15 @@ function LineGraph(){
     , add_hgradient = false
     , line_fill = 'none'
     , line_stroke = '#111'
-    , theta = 4
+    , theta = 10
     , gradient_color = [
           {offset: "0%", color: "steelblue"},
           {offset: "50%", color: "steelblue"},
           {offset: "50%", color: "red"},
           {offset: "100%", color: "red"}
-        ]
+    ]
+    , graph_name_id
+    , graph_name
   ;
 
   var x = d3.scaleTime().range([0, width]);
@@ -299,6 +301,17 @@ function LineGraph(){
   chart.theta = function(h){
     if (!arguments.length) { return theta; }
     theta=h
+    return chart;
+  };
+  chart.graph_name = function(g) {
+    if (!arguments.length) { return graph_name; }
+    graph_name = g;
+    return chart;
+  };
+
+  chart.graph_name_id = function(g) {
+    if (!arguments.length) { return graph_name_id; }
+    graph_name_id = g;
     return chart;
   };
 
