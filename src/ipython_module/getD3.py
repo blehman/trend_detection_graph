@@ -21,7 +21,12 @@ def write_ipynb_local_js(location=None, d3_src=None):
 
     #d3_src = os.path.dirname('ipython_module/d3.v4.2.6/d3.js'
     #log.info('__file__: {}'.format(__file__))
-    d3_src = os.path.join(os.path.dirname(__file__), 'd3.v4.2.6/d3.js')
+
+    #d3_src = os.path.join(os.path.dirname(__file__), 'd3.v4.2.6/d3.js')
+    d3_src = os.path.join(os.path.dirname(__file__), 'lib/d3/d3.min.js')
+    print('########################')
+    print(d3_src)
+    print('########################')
     #log.info('d3_src: {}'.format(d3_src))
 
     d3js = os.path.basename(d3_src)

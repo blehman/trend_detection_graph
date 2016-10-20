@@ -26,6 +26,7 @@
     <script>
       <!-- GET D3-->
       function load_lib(url, callback){
+        console.log('INSIDE load_lib')
         var s = document.createElement('script');
         s.src = url;
         s.async = true;
